@@ -1,0 +1,97 @@
+# env
+deterministic: true
+allow_tf32_on_matmul: true
+allow_tf32_on_cudnn: true
+seed: 0
+
+# path
+vit_name: vit_b
+model_path: /kaggle/working/cellseg1/streamlit_storage/sam_backbone/sam_vit_b_01ec64.pth
+data_dir: /kaggle/working/data_dir/cellseg1/livecell
+result_dir: /kaggle/working/data_dir/cellseg1/livecell/train_image_numbers/livecell_ckps
+result_pth_path: /kaggle/working/data_dir/cellseg1/livecell/train_image_numbers/livecell_ckps/sam_lora.pth
+# result_pth_path: /kaggle/working/data_dir/cellseg1/livecell/train_image_numbers/livecell_ckps
+train_image_dir: /kaggle/working/data_dir/cellseg1/livecell/train/images
+train_mask_dir: /kaggle/working/data_dir/cellseg1/livecell/train/masks
+test_image_dir: /kaggle/working/data_dir/cellseg1/livecell/test/images
+test_mask_dir: /kaggle/working/data_dir/cellseg1/livecell/test/masks
+
+# data
+resize_size: [512, 512]  # W x H - if set to 704x520, epoch is done in 36 mins instead of 22 mins
+patch_size: 256
+sam_image_size: 512
+train_id: null
+train_num: "full"
+duplicate_data: 32
+len_train: 1
+len_test: 1
+
+# train
+epoch_max: 300  # orig - 300, optimal - 20-30
+patience: 5
+batch_size: 8
+val_batch_size: 8
+gradient_accumulation_step: 4
+base_lr: 3.0e-3
+onecycle_lr_pct_start: 0.3
+num_workers: 4
+val_period: 5
+
+## Do not change the following parameters unless you know what you are doing
+
+# net
+image_encoder_lora_rank: 4
+mask_decoder_lora_rank: 4
+freeze_image_encoder: true
+freeze_prompt_encoder: true
+freeze_mask_decoder_transformer: true
+freeze_upscaling_cnn: true
+freeze_output_hypernetworks_mlps: true
+freeze_mask_decoder_mask_tokens: true
+freeze_mask_decoder_iou: true
+lora_dropout: 0.1
+
+# random sample point
+pos_rate: 1.0
+neg_rate: 0.5
+max_point_num: 30
+edge_distance: 20
+neg_area_ratio_threshold: 5
+neg_area_threshold: 1000
+min_cell_area: 100
+foreground_sample_area_ratio: 0.2
+background_sample_area_ratio: 0.2
+foreground_equal_prob: True
+background_equal_prob: True
+
+# data augment
+data_augmentation: true
+bright_limit: 0.2
+contrast_limit: 0.2
+bright_prob: 0.5
+flip_prob: 0.5
+rotate_prob: 0.4
+scale_limit: [-0.2, 0.2]
+crop_prob: 0.3
+crop_scale: [0.3, 1.0]
+crop_ratio: [0.75, 1.3333]
+
+# loss
+ce_loss_weight: 1.0
+punish_background_point: false
+
+# predict
+crop_n_layers: 1
+crop_n_points_downscale_factor: 1
+points_per_side: 32
+points_per_batch: 64
+max_mask_region_area_ratio: 0.1
+min_mask_region_area: 20
+box_nms_thresh: 0.05
+crop_nms_thresh: 0.05
+pred_iou_thresh: 0.8
+stability_score_thresh: 0.6
+stability_score_offset: 0.8
+
+# log
+track_gpu_memory: false
