@@ -7,7 +7,7 @@ from functools import partial
 import torch
 from torch.nn import functional as F
 
-from segment_anything.modeling import (
+from seg_any.modeling import (
     ImageEncoderViT,
     MaskDecoder,
     PromptEncoder,

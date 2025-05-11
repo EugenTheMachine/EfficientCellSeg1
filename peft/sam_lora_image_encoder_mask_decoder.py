@@ -30,8 +30,8 @@ import torch.nn as nn
 from torch.nn.parameter import Parameter
 import loralib as lora
 
-from segment_anything import sam_model_registry
-from segment_anything.modeling import Sam
+from seg_any import sam_model_registry
+from seg_any.modeling import Sam
 from efficientvit.models.efficientvit.sam import EfficientViTSam
 from efficientvit.models.nn.act import build_act
 from efficientvit.models.nn.norm import build_norm

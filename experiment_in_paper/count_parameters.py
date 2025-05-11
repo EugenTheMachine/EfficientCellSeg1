@@ -1,4 +1,4 @@
-from segment_anything import sam_model_registry
+from seg_any import sam_model_registry
 
 
 def count_parameters(model_type):

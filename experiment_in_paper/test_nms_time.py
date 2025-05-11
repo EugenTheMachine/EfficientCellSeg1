@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from metrics import average_precision
 from predict import load_model_from_config, sam_output_to_mask
-from segment_anything import (
+from seg_any import (
     SamAutomaticMaskGenerator,
     SamAutomaticMaskGeneratorMaskNMS,
     SamAutomaticMaskGeneratorOptMaskNMS,

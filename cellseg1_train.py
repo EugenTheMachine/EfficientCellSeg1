@@ -18,7 +18,7 @@ from data.dataset import TrainDataset
 from gpu_memory_tracker import GPUMemoryTracker
 from peft.sam_lora_image_encoder_mask_decoder import LoRa_ESAM
 from sampler import create_collate_fn
-from segment_anything import sam_model_registry
+from seg_any import sam_model_registry
 # from mobile_sam import sam_model_registry
 from set_environment import set_env
 from predict import load_model_from_config
