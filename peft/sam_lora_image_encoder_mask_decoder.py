@@ -509,7 +509,7 @@ class LoRaConvLayer(nn.Module):
 
 
 
-class LoRa_ESAM(LoRA_Sam):
+class LoRa_ESAM(nn.Module):
     def __init__(self, sam_model: EfficientViTSam, config, lora_layer=None, zero_initial=False):
         super(LoRa_ESAM, self).__init__()
 
@@ -521,8 +521,8 @@ class LoRa_ESAM(LoRA_Sam):
             self.lora_layer = list(range(len(sam_model.image_encoder.blocks)))
         self.config = config
         # create for storage, then we can init them or load weights
-        self.w_As = []  # These are linear layers
-        self.w_Bs = []
+        # self.w_As = []  # These are linear layers
+        # self.w_Bs = []
 
         # lets freeze first
         if self.config["freeze_image_encoder"]:
@@ -568,8 +568,8 @@ class LoRa_ESAM(LoRA_Sam):
             # Here, we do the surgery
             for t_layer_i, blk in enumerate(sam_model.image_encoder.backbone.stages[4].op_list[1:]):
                 # If we only want few lora layer instead of all
-                if t_layer_i not in self.lora_layer:
-                    continue
+                # if t_layer_i not in self.lora_layer:
+                #     continue
                 # w_qkv_linear = blk.attn.qkv
                 # self.dim = w_qkv_linear.in_features
                 # w_a_linear_q = nn.Linear(self.dim, er, bias=False)
@@ -601,13 +601,13 @@ class LoRa_ESAM(LoRA_Sam):
                                                                lora_dropout=self.config['lora_dropout'],
                                                                r=er)
 
-        # Additional surgery for the mask decoder
-        self.self_attn_As = []
-        self.self_attn_Bs = []
-        self.cross_attn_ti_As = []
-        self.cross_attn_ti_Bs = []
-        self.cross_attn_it_As = []
-        self.cross_attn_it_Bs = []
+        # # Additional surgery for the mask decoder
+        # self.self_attn_As = []
+        # self.self_attn_Bs = []
+        # self.cross_attn_ti_As = []
+        # self.cross_attn_ti_Bs = []
+        # self.cross_attn_it_As = []
+        # self.cross_attn_it_Bs = []
 
         dr = self.config["mask_decoder_lora_rank"]
 
