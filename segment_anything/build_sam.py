@@ -1,7 +1,7 @@
 # Modified from Segment Anything Model (SAM)
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 # Licensed under the Apache License, Version 2.0
-
+from typing import Callable
 from functools import partial
 
 import torch
@@ -14,6 +14,23 @@ from segment_anything.modeling import (
     Sam,
     TwoWayTransformer,
 )
+from efficientvit.models.efficientvit import (
+    EfficientViTSam,
+    efficientvit_sam_l0,
+    efficientvit_sam_l1,
+    efficientvit_sam_l2,
+    efficientvit_sam_xl0,
+    efficientvit_sam_xl1,
+)
+from efficientvit.sam_model_zoo import create_efficientvit_sam_model
+
+REGISTERED_EFFICIENTVIT_SAM_MODEL: dict[str, tuple[Callable, float, str]] = {
+    "efficientvit-sam-l0": (efficientvit_sam_l0, 1e-6, "efficientvit_sam/efficientvit_sam_l0.pt"),
+    "efficientvit-sam-l1": (efficientvit_sam_l1, 1e-6, "efficientvit_sam/efficientvit_sam_l1.pt"),
+    "efficientvit-sam-l2": (efficientvit_sam_l2, 1e-6, "efficientvit_sam/efficientvit_sam_l2.pt"),
+    "efficientvit-sam-xl0": (efficientvit_sam_xl0, 1e-6, "efficientvit_sam/efficientvit_sam_xl0.pt"),
+    "efficientvit-sam-xl1": (efficientvit_sam_xl1, 1e-6, "efficientvit_sam/efficientvit_sam_xl1.pt"),
+}
 
 
 def build_sam_vit_h(checkpoint=None, image_size=1024):
@@ -48,12 +65,19 @@ def build_sam_vit_b(checkpoint=None, image_size=1024):
         checkpoint=checkpoint,
     )
 
+def build_esam(checkpoint=None, image_size=512):
+    return create_efficientvit_sam_model(
+        name="efficientvit-sam-l0",
+        weight_url=checkpoint
+    )
+
 
 sam_model_registry = {
     "default": build_sam_vit_h,
     "vit_h": build_sam_vit_h,
     "vit_l": build_sam_vit_l,
     "vit_b": build_sam_vit_b,
+    "evit": build_esam,
 }
 
 

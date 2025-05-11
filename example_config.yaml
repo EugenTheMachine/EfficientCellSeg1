@@ -50,6 +50,7 @@ freeze_output_hypernetworks_mlps: true
 freeze_mask_decoder_mask_tokens: true
 freeze_mask_decoder_iou: true
 lora_dropout: 0.1
+train_biases: "lora_only"  # loralib str param. Either "lora_only" or "all"
 
 # random sample point
 pos_rate: 1.0

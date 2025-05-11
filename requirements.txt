@@ -1,7 +1,7 @@
 numpy==1.26.4
 plotly==5.24.1
 scipy==1.14.1
-streamlit==1.40.0
+# streamlit==1.40.0
 pillow==10.4.0
 scikit-image==0.24.0
 nibabel==5.3.2
@@ -13,5 +13,7 @@ tqdm==4.67.0
 sympy==1.13.1
 pandas==2.2.3
 kaleido==0.2.1
-ray==2.38.0
-ray[tune]
+# ray==2.38.0
+# ray[tune]
+efficientvit==0.0.0
+loralib==0.1.2
