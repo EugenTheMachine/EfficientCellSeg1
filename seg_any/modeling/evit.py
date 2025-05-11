@@ -39,7 +39,7 @@ class EfficientViTSam(nn.Module):
         self.transform = transforms.Compose(
             [
                 SamResize(self.image_size[1]),
-                transforms.ToTensor(),
+                # transforms.ToTensor(),
                 transforms.Normalize(
                     mean=[123.675 / 255, 116.28 / 255, 103.53 / 255],
                     std=[58.395 / 255, 57.12 / 255, 57.375 / 255],
