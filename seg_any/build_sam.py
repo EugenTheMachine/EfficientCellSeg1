@@ -1,7 +1,7 @@
 # Modified from Segment Anything Model (SAM)
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 # Licensed under the Apache License, Version 2.0
-from typing import Callable
+from typing import Callable, Optional
 from functools import partial
 
 import torch
@@ -15,15 +15,10 @@ from seg_any.modeling import (
     TwoWayTransformer,
 )
 from seg_any.modeling.evit import EfficientViTSam, EfficientViTSamImageEncoder
-# from efficientvit.models.efficientvit import (
-#     efficientvit_sam_l0,
-#     efficientvit_sam_l1,
-#     efficientvit_sam_l2,
-#     efficientvit_sam_xl0,
-#     efficientvit_sam_xl1,
-# )
+
 from efficientvit.models.efficientvit.sam import SamNeck, build_kwargs_from_config
-from efficientvit.sam_model_zoo import create_efficientvit_sam_model
+from efficientvit.models.nn.norm import set_norm_eps
+from efficientvit.models.utils import load_state_dict_from_file
 
 
 def build_efficientvit_sam(image_encoder: EfficientViTSamImageEncoder, image_size: int) -> EfficientViTSam:
@@ -154,7 +149,6 @@ def efficientvit_sam_xl1(image_size: int = 1024, **kwargs) -> EfficientViTSam:
     image_encoder = EfficientViTSamImageEncoder(backbone, neck)
     return build_efficientvit_sam(image_encoder, image_size)
 
-
 REGISTERED_EFFICIENTVIT_SAM_MODEL: dict[str, tuple[Callable, float, str]] = {
     "efficientvit-sam-l0": (efficientvit_sam_l0, 1e-6, "efficientvit_sam/efficientvit_sam_l0.pt"),
     "efficientvit-sam-l1": (efficientvit_sam_l1, 1e-6, "efficientvit_sam/efficientvit_sam_l1.pt"),
@@ -162,6 +156,27 @@ REGISTERED_EFFICIENTVIT_SAM_MODEL: dict[str, tuple[Callable, float, str]] = {
     "efficientvit-sam-xl0": (efficientvit_sam_xl0, 1e-6, "efficientvit_sam/efficientvit_sam_xl0.pt"),
     "efficientvit-sam-xl1": (efficientvit_sam_xl1, 1e-6, "efficientvit_sam/efficientvit_sam_xl1.pt"),
 }
+
+def create_efficientvit_sam_model(
+    name: str, pretrained=True, weight_url: Optional[str] = None, **kwargs
+) -> EfficientViTSam:
+    if name not in REGISTERED_EFFICIENTVIT_SAM_MODEL:
+        raise ValueError(
+            f"Cannot find {name} in the model zoo. List of models: {list(REGISTERED_EFFICIENTVIT_SAM_MODEL.keys())}"
+        )
+    else:
+        model_cls, norm_eps, default_pt = REGISTERED_EFFICIENTVIT_SAM_MODEL[name]
+        model = model_cls(**kwargs)
+        set_norm_eps(model, norm_eps)
+        weight_url = default_pt if weight_url is None else weight_url
+
+    if pretrained:
+        if weight_url is None:
+            raise ValueError(f"Cannot find the pretrained weight of {name}.")
+        else:
+            weight = load_state_dict_from_file(weight_url)
+            model.load_state_dict(weight)
+    return model
 
 
 def build_sam_vit_h(checkpoint=None, image_size=1024):
