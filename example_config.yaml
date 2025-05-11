@@ -29,9 +29,9 @@ len_test: 1
 # train
 epoch_max: 300  # orig - 300, optimal - 20-30
 patience: 5
-batch_size: 8
+batch_size: 4
 val_batch_size: 8
-gradient_accumulation_step: 4
+gradient_accumulation_step: 8
 base_lr: 3.0e-3
 onecycle_lr_pct_start: 0.3
 num_workers: 4

@@ -32,7 +32,7 @@ import loralib as lora
 
 from seg_any import sam_model_registry
 from seg_any.modeling import Sam
-from efficientvit.models.efficientvit.sam import EfficientViTSam
+from seg_any.modeling.evit import EfficientViTSam
 from efficientvit.models.nn.act import build_act
 from efficientvit.models.nn.norm import build_norm
 from efficientvit.models.utils import get_same_padding
