@@ -597,7 +597,7 @@ class LoRa_ESAM(nn.Module):
                                                                padding=qkv_conv_reference.padding,
                                                                dilation=qkv_conv_reference.dilation,
                                                                groups=qkv_conv_reference.groups,
-                                                               bias=qkv_conv_reference.bias,
+                                                               bias=True,
                                                                lora_dropout=self.config['lora_dropout'],
                                                                r=er)
 
@@ -642,13 +642,13 @@ class LoRa_ESAM(nn.Module):
                 q_proj_reference = blk.self_attn.q_proj
                 blk.self_attn.q_proj = lora.Linear(in_features=q_proj_reference.in_features,
                                                    out_features=q_proj_reference.out_features,
-                                                   bias=q_proj_reference.bias,
+                                                   bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
                 v_proj_reference = blk.self_attn.v_proj
                 blk.self_attn.v_proj = lora.Linear(in_features=v_proj_reference.in_features,
                                                    out_features=v_proj_reference.out_features,
-                                                   bias=v_proj_reference.bias,
+                                                   bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
 
@@ -681,14 +681,14 @@ class LoRa_ESAM(nn.Module):
                 blk.cross_attn_token_to_image.q_proj = lora.Linear(
                                                    in_features=q_proj_reference.in_features,
                                                    out_features=q_proj_reference.out_features,
-                                                   bias=q_proj_reference.bias,
+                                                   bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
                 v_proj_reference = blk.cross_attn_token_to_image.v_proj
                 blk.cross_attn_token_to_image.v_proj = lora.Linear(
                                                    in_features=v_proj_reference.in_features,
                                                    out_features=v_proj_reference.out_features,
-                                                   bias=v_proj_reference.bias,
+                                                   bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
 
@@ -721,14 +721,14 @@ class LoRa_ESAM(nn.Module):
                 blk.cross_attn_image_to_token.q_proj = lora.Linear(
                                                    in_features=q_proj_reference.in_features,
                                                    out_features=q_proj_reference.out_features,
-                                                   bias=q_proj_reference.bias,
+                                                   bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
                 v_proj_reference = blk.cross_attn_image_to_token.v_proj
                 blk.cross_attn_image_to_token.v_proj = lora.Linear(
                                                    in_features=v_proj_reference.in_features,
                                                    out_features=v_proj_reference.out_features,
-                                                   bias=v_proj_reference.bias,
+                                                   bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
 
@@ -758,13 +758,13 @@ class LoRa_ESAM(nn.Module):
             q_proj_reference = block.q_proj
             block.q_proj = lora.Linear(in_features=q_proj_reference.in_features,
                                         out_features=q_proj_reference.out_features,
-                                        bias=q_proj_reference.bias,
+                                        bias=True,
                                         r=dr,
                                         lora_dropout=self.config['lora_dropout'])
             v_proj_reference = block.v_proj
             block.v_proj = lora.Linear(in_features=v_proj_reference.in_features,
                                         out_features=v_proj_reference.out_features,
-                                        bias=v_proj_reference.bias,
+                                        bias=True,
                                         r=dr,
                                         lora_dropout=self.config['lora_dropout'])
 
