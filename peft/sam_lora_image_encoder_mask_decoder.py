@@ -515,10 +515,10 @@ class LoRa_ESAM(nn.Module):
 
         # base_vit_dim = sam_model.image_encoder.patch_embed.proj.out_channels
         # dim = base_vit_dim
-        if lora_layer:
-            self.lora_layer = lora_layer
-        else:
-            self.lora_layer = list(range(len(sam_model.image_encoder.blocks)))
+        # if lora_layer:
+        #     self.lora_layer = lora_layer
+        # else:
+        #     self.lora_layer = list(range(len(sam_model.image_encoder.blocks)))
         self.config = config
         # create for storage, then we can init them or load weights
         # self.w_As = []  # These are linear layers
