@@ -5,8 +5,8 @@ allow_tf32_on_cudnn: true
 seed: 0
 
 # path
-vit_name: vit_b
-model_path: /kaggle/working/cellseg1/streamlit_storage/sam_backbone/sam_vit_b_01ec64.pth
+vit_name: evit
+model_path: /kaggle/working/cellseg1/efficientvit_sam/efficientvit_sam_l0.pt
 data_dir: /kaggle/working/data_dir/cellseg1/livecell
 result_dir: /kaggle/working/data_dir/cellseg1/livecell/train_image_numbers/livecell_ckps
 result_pth_path: /kaggle/working/data_dir/cellseg1/livecell/train_image_numbers/livecell_ckps/sam_lora.pth
