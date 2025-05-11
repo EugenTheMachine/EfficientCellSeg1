@@ -22,7 +22,7 @@ def set_env(deterministic=True, seed=0, allow_tf32_on_cudnn=True, allow_tf32_on_
         cudnn.deterministic = True
         # https://docs.nvidia.com/cuda/cublas/index.html#cublasApi_reproducibility
         os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-        torch.use_deterministic_algorithms(True)
+        torch.use_deterministic_algorithms(True, warn_only=True)
     else:
         cudnn.benchmark = True
         torch.use_deterministic_algorithms(False)
