@@ -12,7 +12,8 @@ import yaml
 from torch.optim.lr_scheduler import OneCycleLR
 from torch.utils.data import DataLoader
 from torch.amp import autocast, GradScaler
-from tqdm import tqdm
+# from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 from cell_loss import cell_prob_mse_loss, cross_entropy_loss
 from data.dataset import TrainDataset
