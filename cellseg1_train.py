@@ -207,7 +207,7 @@ def train_epoch(
             continue
 
         batch_images, batch_points = to_tensor(images, all_points, config["sam_image_size"])
-        with autocast():  # Enables mixed precision
+        with autocast(device_type="cuda"):  # Enables mixed precision
             loss = compute_loss(model, config, batch_images, batch_points, cell_masks, all_points, all_cell_probs)
         total_train_loss.append(loss.item())
 
