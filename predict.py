@@ -12,7 +12,7 @@ from data.utils import (
     remap_mask_color,
     resize_image,
 )
-from peft.sam_lora_image_encoder_mask_decoder import LoRA_Sam
+from peft.sam_lora_image_encoder_mask_decoder import LoRA_Sam, LoRa_ESAM
 from seg_any import SamAutomaticMaskGeneratorOptMaskNMS, sam_model_registry
 from set_environment import set_env
 
@@ -76,8 +76,12 @@ def predict_images(config, images, progress_callback=None, stop_event=None):
 
 
 def load_model_from_config(config, empty_lora=False) -> LoRA_Sam:
-    model = sam_model_registry[config["vit_name"]](checkpoint=config["model_path"], image_size=config["sam_image_size"])
-    model = LoRA_Sam(model, config)
+    model = sam_model_registry[config["vit_name"]](checkpoint=config["model_path"],
+                                                   image_size=config["sam_image_size"])
+    if config['vit_name'] == 'evit':
+        model = LoRa_ESAM(model, config)
+    else:
+        model = LoRA_Sam(model, config)
     model = model.cuda()
     if empty_lora:
         pass
