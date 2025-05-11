@@ -592,7 +592,7 @@ class LoRa_ESAM(nn.Module):
                 qkv_conv_reference = blk.context_module.main.qkv.conv
                 blk.context_module.main.qkv.conv = lora.Conv2d(in_channels=qkv_conv_reference.in_channels,
                                                                out_channels=qkv_conv_reference.out_channels,
-                                                               kernel_size=qkv_conv_reference.kernel_size,
+                                                               kernel_size=qkv_conv_reference.kernel_size[0],
                                                                stride=qkv_conv_reference.stride,
                                                                padding=qkv_conv_reference.padding,
                                                                dilation=qkv_conv_reference.dilation,
