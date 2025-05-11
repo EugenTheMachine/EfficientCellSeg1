@@ -11,6 +11,7 @@ import torch.optim as optim
 import yaml
 from torch.optim.lr_scheduler import OneCycleLR
 from torch.utils.data import DataLoader
+from torch.amp import autocast, GradScaler
 from tqdm import tqdm
 
 from cell_loss import cell_prob_mse_loss, cross_entropy_loss
@@ -190,7 +191,8 @@ def train_epoch(
     val_period: int = 1,
     len_train: int = 1,
     len_test: int = 1,
-    stop_event=None
+    stop_event=None,
+    scaler=None
 ):
     model.train()
     actual_ga_step = 0
@@ -205,13 +207,16 @@ def train_epoch(
             continue
 
         batch_images, batch_points = to_tensor(images, all_points, config["sam_image_size"])
-
-        loss = compute_loss(model, config, batch_images, batch_points, cell_masks, all_points, all_cell_probs)
+        with autocast():  # Enables mixed precision
+            loss = compute_loss(model, config, batch_images, batch_points, cell_masks, all_points, all_cell_probs)
         total_train_loss.append(loss.item())
 
         actual_ga_step += 1
         loss_ga = loss / (actual_ga_step if (i_batch + 1) == len(trainloader) else config["gradient_accumulation_step"])
-        loss_ga.backward()
+        # loss_ga.backward()
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
 
         if ((i_batch + 1) % config["gradient_accumulation_step"] == 0) or ((i_batch + 1) == len(trainloader)):
             optimizer.step()
@@ -287,11 +292,13 @@ def main(config_path: Union[str, Dict, Path], save_model: bool = True) -> LoRa_E
     # saving cfg file beforehead
     with open(config["result_dir"] + "/config.yaml", "w") as file:
         yaml.dump(config, file, default_flow_style=False, sort_keys=False)
+    scaler = GradScaler(device="cuda")
     # proceeding with actual training
     for epoch in tqdm(range(config["epoch_max"]), desc="Epochs"):
         train_loss, val_loss = train_epoch(model, config, trainloader, testloader, optimizer,
                                            scheduler, epoch=epoch, val_period=config['val_period'],
-                                           len_train=config['len_train'], len_test=config['len_test'])
+                                           len_train=config['len_train'], len_test=config['len_test'],
+                                           scaler=scaler)
         training_log["train_loss"].append(train_loss)
         training_log["val_loss"].append(val_loss)
         training_log["epoch"].append(epoch)
