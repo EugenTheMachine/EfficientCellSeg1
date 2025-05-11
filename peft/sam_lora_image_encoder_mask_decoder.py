@@ -527,41 +527,41 @@ class LoRa_ESAM(nn.Module):
         # lets freeze first
         if self.config["freeze_image_encoder"]:
             lora.mark_only_lora_as_trainable(sam_model.image_encoder, bias=self.config['train_biases'])
-            # for param in sam_model.image_encoder.parameters():
-            #     param.requires_grad = False
+            for param in sam_model.image_encoder.parameters():
+                param.requires_grad = False
 
         if self.config["freeze_prompt_encoder"]:
             lora.mark_only_lora_as_trainable(sam_model.prompt_encoder, bias=self.config['train_biases'])
-            # for param in sam_model.prompt_encoder.parameters():
-            #     param.requires_grad = False
+            for param in sam_model.prompt_encoder.parameters():
+                param.requires_grad = False
 
         if self.config["freeze_mask_decoder_transformer"]:
             lora.mark_only_lora_as_trainable(sam_model.mask_decoder.transformer, bias=self.config['train_biases'])
-            # for param in sam_model.mask_decoder.transformer.parameters():
-            #     param.requires_grad = False
+            for param in sam_model.mask_decoder.transformer.parameters():
+                param.requires_grad = False
 
         if self.config["freeze_output_hypernetworks_mlps"]:
             lora.mark_only_lora_as_trainable(sam_model.mask_decoder.output_hypernetworks_mlps, bias=self.config['train_biases'])
-            # for param in sam_model.mask_decoder.output_hypernetworks_mlps.parameters():
-            #     param.requires_grad = False
+            for param in sam_model.mask_decoder.output_hypernetworks_mlps.parameters():
+                param.requires_grad = False
 
         if self.config["freeze_upscaling_cnn"]:
             lora.mark_only_lora_as_trainable(sam_model.mask_decoder.output_upscaling, bias=self.config['train_biases'])
-            # for param in sam_model.mask_decoder.output_upscaling.parameters():
-            #     param.requires_grad = False
+            for param in sam_model.mask_decoder.output_upscaling.parameters():
+                param.requires_grad = False
 
         if self.config["freeze_mask_decoder_mask_tokens"]:
             lora.mark_only_lora_as_trainable(sam_model.mask_decoder.mask_tokens, bias=self.config['train_biases'])
-            # for param in sam_model.mask_decoder.mask_tokens.parameters():
-            #     param.requires_grad = False
+            for param in sam_model.mask_decoder.mask_tokens.parameters():
+                param.requires_grad = False
 
         if self.config["freeze_mask_decoder_iou"]:
             lora.mark_only_lora_as_trainable(sam_model.mask_decoder.iou_token, bias=self.config['train_biases'])
             lora.mark_only_lora_as_trainable(sam_model.mask_decoder.iou_prediction_head, bias=self.config['train_biases'])
-            # for param in sam_model.mask_decoder.iou_token.parameters():
-            #     param.requires_grad = False
-            # for param in sam_model.mask_decoder.iou_prediction_head.parameters():
-            #     param.requires_grad = False
+            for param in sam_model.mask_decoder.iou_token.parameters():
+                param.requires_grad = False
+            for param in sam_model.mask_decoder.iou_prediction_head.parameters():
+                param.requires_grad = False
 
         er = self.config["image_encoder_lora_rank"]
         if er > 0:
@@ -600,6 +600,7 @@ class LoRa_ESAM(nn.Module):
                                                                bias=True,
                                                                lora_dropout=self.config['lora_dropout'],
                                                                r=er)
+                lora.mark_only_lora_as_trainable(blk.context_module.main.qkv.conv, bias=self.config['train_biases'])
 
         # # Additional surgery for the mask decoder
         # self.self_attn_As = []
@@ -645,12 +646,14 @@ class LoRa_ESAM(nn.Module):
                                                    bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
+                lora.mark_only_lora_as_trainable(blk.self_attn.q_proj, bias=self.config['train_biases'])
                 v_proj_reference = blk.self_attn.v_proj
                 blk.self_attn.v_proj = lora.Linear(in_features=v_proj_reference.in_features,
                                                    out_features=v_proj_reference.out_features,
                                                    bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
+                lora.mark_only_lora_as_trainable(blk.self_attn.v_proj, bias=self.config['train_biases'])
 
                 # cross_attn_ti_q_proj = blk.cross_attn_token_to_image.q_proj
                 # cross_attn_ti_v_proj = blk.cross_attn_token_to_image.v_proj
@@ -684,6 +687,7 @@ class LoRa_ESAM(nn.Module):
                                                    bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
+                lora.mark_only_lora_as_trainable(blk.cross_attn_token_to_image.q_proj, bias=self.config['train_biases'])
                 v_proj_reference = blk.cross_attn_token_to_image.v_proj
                 blk.cross_attn_token_to_image.v_proj = lora.Linear(
                                                    in_features=v_proj_reference.in_features,
@@ -691,6 +695,7 @@ class LoRa_ESAM(nn.Module):
                                                    bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
+                lora.mark_only_lora_as_trainable(blk.cross_attn_token_to_image.v_proj, bias=self.config['train_biases'])
 
                 # cross_attn_it_q_proj = blk.cross_attn_image_to_token.q_proj
                 # cross_attn_it_v_proj = blk.cross_attn_image_to_token.v_proj
@@ -724,6 +729,7 @@ class LoRa_ESAM(nn.Module):
                                                    bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
+                lora.mark_only_lora_as_trainable(blk.cross_attn_image_to_token.q_proj, bias=self.config['train_biases'])
                 v_proj_reference = blk.cross_attn_image_to_token.v_proj
                 blk.cross_attn_image_to_token.v_proj = lora.Linear(
                                                    in_features=v_proj_reference.in_features,
@@ -731,6 +737,7 @@ class LoRa_ESAM(nn.Module):
                                                    bias=True,
                                                    r=dr,
                                                    lora_dropout=self.config['lora_dropout'])
+                lora.mark_only_lora_as_trainable(blk.cross_attn_image_to_token.v_proj, bias=self.config['train_biases'])
 
             # # final attention token to image
             block = decoder_transformer.final_attn_token_to_image
@@ -761,12 +768,14 @@ class LoRa_ESAM(nn.Module):
                                         bias=True,
                                         r=dr,
                                         lora_dropout=self.config['lora_dropout'])
+            lora.mark_only_lora_as_trainable(block.q_proj, bias=self.config['train_biases'])
             v_proj_reference = block.v_proj
             block.v_proj = lora.Linear(in_features=v_proj_reference.in_features,
                                         out_features=v_proj_reference.out_features,
                                         bias=True,
                                         r=dr,
                                         lora_dropout=self.config['lora_dropout'])
+            lora.mark_only_lora_as_trainable(block.v_proj, bias=self.config['train_biases'])
 
         # self.reset_parameters(zero_initial=zero_initial)
         self.sam = sam_model
