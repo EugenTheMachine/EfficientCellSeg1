@@ -14,15 +14,146 @@ from seg_any.modeling import (
     Sam,
     TwoWayTransformer,
 )
-from efficientvit.models.efficientvit import (
-    EfficientViTSam,
-    efficientvit_sam_l0,
-    efficientvit_sam_l1,
-    efficientvit_sam_l2,
-    efficientvit_sam_xl0,
-    efficientvit_sam_xl1,
-)
+from seg_any.modeling.evit import EfficientViTSam, EfficientViTSamImageEncoder
+# from efficientvit.models.efficientvit import (
+#     efficientvit_sam_l0,
+#     efficientvit_sam_l1,
+#     efficientvit_sam_l2,
+#     efficientvit_sam_xl0,
+#     efficientvit_sam_xl1,
+# )
+from efficientvit.models.efficientvit.sam import SamNeck, build_kwargs_from_config
 from efficientvit.sam_model_zoo import create_efficientvit_sam_model
+
+
+def build_efficientvit_sam(image_encoder: EfficientViTSamImageEncoder, image_size: int) -> EfficientViTSam:
+    return EfficientViTSam(
+        image_encoder=image_encoder,
+        prompt_encoder=PromptEncoder(
+            embed_dim=256,
+            image_embedding_size=(64, 64),
+            input_image_size=(1024, 1024),
+            mask_in_chans=16,
+        ),
+        mask_decoder=MaskDecoder(
+            num_multimask_outputs=3,
+            transformer=TwoWayTransformer(
+                depth=2,
+                embedding_dim=256,
+                mlp_dim=2048,
+                num_heads=8,
+            ),
+            transformer_dim=256,
+            iou_head_depth=3,
+            iou_head_hidden_dim=256,
+        ),
+        image_size=(1024, image_size),
+    )
+
+
+def efficientvit_sam_l0(image_size: int = 512, **kwargs) -> EfficientViTSam:
+    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_l0
+
+    backbone = efficientvit_backbone_l0(**kwargs)
+
+    neck = SamNeck(
+        fid_list=["stage4", "stage3", "stage2"],
+        in_channel_list=[512, 256, 128],
+        head_width=256,
+        head_depth=4,
+        expand_ratio=1,
+        middle_op="fmb",
+    )
+
+    image_encoder = EfficientViTSamImageEncoder(backbone, neck)
+    return build_efficientvit_sam(image_encoder, image_size)
+
+
+def efficientvit_sam_l1(image_size: int = 512, **kwargs) -> EfficientViTSam:
+    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_l1
+
+    backbone = efficientvit_backbone_l1(**kwargs)
+
+    neck = SamNeck(
+        fid_list=["stage4", "stage3", "stage2"],
+        in_channel_list=[512, 256, 128],
+        head_width=256,
+        head_depth=8,
+        expand_ratio=1,
+        middle_op="fmb",
+    )
+
+    image_encoder = EfficientViTSamImageEncoder(backbone, neck)
+    return build_efficientvit_sam(image_encoder, image_size)
+
+
+def efficientvit_sam_l2(image_size: int = 512, **kwargs) -> EfficientViTSam:
+    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_l2
+
+    backbone = efficientvit_backbone_l2(**kwargs)
+
+    neck = SamNeck(
+        fid_list=["stage4", "stage3", "stage2"],
+        in_channel_list=[512, 256, 128],
+        head_width=256,
+        head_depth=12,
+        expand_ratio=1,
+        middle_op="fmb",
+    )
+
+    image_encoder = EfficientViTSamImageEncoder(backbone, neck)
+    return build_efficientvit_sam(image_encoder, image_size)
+
+
+def efficientvit_sam_xl0(image_size: int = 1024, **kwargs) -> EfficientViTSam:
+    from efficientvit.models.efficientvit.backbone import EfficientViTLargeBackbone
+
+    backbone = EfficientViTLargeBackbone(
+        width_list=[32, 64, 128, 256, 512, 1024],
+        depth_list=[0, 1, 1, 2, 3, 3],
+        block_list=["res", "fmb", "fmb", "fmb", "att@3", "att@3"],
+        expand_list=[1, 4, 4, 4, 4, 6],
+        fewer_norm_list=[False, False, False, False, True, True],
+        **build_kwargs_from_config(kwargs, EfficientViTLargeBackbone),
+    )
+
+    neck = SamNeck(
+        fid_list=["stage5", "stage4", "stage3"],
+        in_channel_list=[1024, 512, 256],
+        head_width=256,
+        head_depth=6,
+        expand_ratio=4,
+        middle_op="fmb",
+    )
+
+    image_encoder = EfficientViTSamImageEncoder(backbone, neck)
+    return build_efficientvit_sam(image_encoder, image_size)
+
+
+def efficientvit_sam_xl1(image_size: int = 1024, **kwargs) -> EfficientViTSam:
+    from efficientvit.models.efficientvit.backbone import EfficientViTLargeBackbone
+
+    backbone = EfficientViTLargeBackbone(
+        width_list=[32, 64, 128, 256, 512, 1024],
+        depth_list=[1, 2, 2, 4, 6, 6],
+        block_list=["res", "fmb", "fmb", "fmb", "att@3", "att@3"],
+        expand_list=[1, 4, 4, 4, 4, 6],
+        fewer_norm_list=[False, False, False, False, True, True],
+        **build_kwargs_from_config(kwargs, EfficientViTLargeBackbone),
+    )
+
+    neck = SamNeck(
+        fid_list=["stage5", "stage4", "stage3"],
+        in_channel_list=[1024, 512, 256],
+        head_width=256,
+        head_depth=12,
+        expand_ratio=4,
+        middle_op="fmb",
+    )
+
+    image_encoder = EfficientViTSamImageEncoder(backbone, neck)
+    return build_efficientvit_sam(image_encoder, image_size)
+
 
 REGISTERED_EFFICIENTVIT_SAM_MODEL: dict[str, tuple[Callable, float, str]] = {
     "efficientvit-sam-l0": (efficientvit_sam_l0, 1e-6, "efficientvit_sam/efficientvit_sam_l0.pt"),
