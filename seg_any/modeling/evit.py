@@ -173,7 +173,7 @@ class EfficientViTSam(nn.Module):
         # padw = self.image_encoder.img_size - w
         # x = F.pad(x, (0, padw, 0, padh))
         try:
-            res = self.transform(x)
+            res = self.transform(x.float())
         except TypeError:
             res = self.transform2(x)
         return res
