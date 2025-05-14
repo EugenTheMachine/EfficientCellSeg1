@@ -27,7 +27,7 @@ def build_efficientvit_sam(image_encoder: EfficientViTSamImageEncoder, image_siz
         prompt_encoder=PromptEncoder(
             embed_dim=256,
             image_embedding_size=(64, 64),
-            input_image_size=(1024, 1024),
+            input_image_size=(512, 512),
             mask_in_chans=16,
         ),
         mask_decoder=MaskDecoder(
@@ -42,7 +42,7 @@ def build_efficientvit_sam(image_encoder: EfficientViTSamImageEncoder, image_siz
             iou_head_depth=3,
             iou_head_hidden_dim=256,
         ),
-        image_size=(1024, image_size),
+        image_size=(512, image_size),
     )
 
 
@@ -100,7 +100,7 @@ def efficientvit_sam_l2(image_size: int = 512, **kwargs) -> EfficientViTSam:
     return build_efficientvit_sam(image_encoder, image_size)
 
 
-def efficientvit_sam_xl0(image_size: int = 1024, **kwargs) -> EfficientViTSam:
+def efficientvit_sam_xl0(image_size: int = 512, **kwargs) -> EfficientViTSam:
     from efficientvit.models.efficientvit.backbone import EfficientViTLargeBackbone
 
     backbone = EfficientViTLargeBackbone(
@@ -179,7 +179,7 @@ def create_efficientvit_sam_model(
     return model
 
 
-def build_sam_vit_h(checkpoint=None, image_size=1024):
+def build_sam_vit_h(checkpoint=None, image_size=512):
     return _build_sam(
         encoder_embed_dim=1280,
         encoder_depth=32,
@@ -190,7 +190,7 @@ def build_sam_vit_h(checkpoint=None, image_size=1024):
     )
 
 
-def build_sam_vit_l(checkpoint=None, image_size=1024):
+def build_sam_vit_l(checkpoint=None, image_size=512):
     return _build_sam(
         encoder_embed_dim=1024,
         encoder_depth=24,
@@ -201,7 +201,7 @@ def build_sam_vit_l(checkpoint=None, image_size=1024):
     )
 
 
-def build_sam_vit_b(checkpoint=None, image_size=1024):
+def build_sam_vit_b(checkpoint=None, image_size=512):
     return _build_sam(
         encoder_embed_dim=768,
         encoder_depth=12,

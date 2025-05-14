@@ -111,7 +111,7 @@ def main():
             sam_image_size = st.number_input(
                 "SAM Image Size",
                 min_value=64,
-                max_value=1024,
+                max_value=512,
                 value=512,
                 step=64,
                 help="Need to be the same as the training",
