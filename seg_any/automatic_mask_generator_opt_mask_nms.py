@@ -10,7 +10,8 @@ import torch
 from mask_nms import opt_mask_nms, calculate_scores
 from typing import Any, Dict, List, Optional, Tuple
 
-from .modeling import Sam
+# from .modeling import Sam
+from .modeling.evit import EfficientViTSam
 from .predictor import SamPredictor
 from .utils.amg import (
     MaskData,
@@ -35,7 +36,7 @@ from .utils.amg import (
 class SamAutomaticMaskGeneratorOptMaskNMS:
     def __init__(
         self,
-        model: Sam,
+        model: EfficientViTSam,
         points_per_side: Optional[int] = 32,
         points_per_batch: int = 64,
         pred_iou_thresh: float = 0.88,

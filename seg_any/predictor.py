@@ -5,7 +5,8 @@
 import numpy as np
 import torch
 
-from seg_any.modeling import Sam
+# from seg_any.modeling import Sam
+from seg_any.modeling.evit import EfficientViTSam
 
 from typing import Optional, Tuple
 
@@ -15,7 +16,7 @@ from .utils.transforms import ResizeLongestSide
 class SamPredictor:
     def __init__(
         self,
-        sam_model: Sam,
+        sam_model: EfficientViTSam,
     ) -> None:
         """
         Uses SAM to calculate the image embedding for an image, and then
@@ -28,6 +29,7 @@ class SamPredictor:
         self.model = sam_model
         self.transform = ResizeLongestSide(sam_model.image_encoder.img_size)
         self.reset_image()
+        self.device = self.model.device
 
     def set_image(
         self,
@@ -253,9 +255,9 @@ class SamPredictor:
         assert self.features is not None, "Features must exist if an image has been set."
         return self.features
 
-    @property
-    def device(self) -> torch.device:
-        return self.model.device
+    # @property
+    # def device(self) -> torch.device:
+    #     return self.model.device
 
     def reset_image(self) -> None:
         """Resets the currently set image."""
