@@ -29,6 +29,7 @@ class EfficientViTSam(nn.Module):
         self.mask_decoder = mask_decoder
 
         self.image_size = image_size
+        self.image_encoder.img_size = image_size
         # self.register_buffer("pixel_mean",
         #                      torch.Tensor([123.675 / 255, 116.28 / 255, 103.53 / 255]).view(-1, 1, 1),
         #                      False)
