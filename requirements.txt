@@ -15,5 +15,6 @@ pandas==2.2.3
 kaleido==0.2.1
 # ray==2.38.0
 # ray[tune]
-git+https://github.com/mit-han-lab/efficientvit.git
+# git+https://github.com/mit-han-lab/efficientvit.git
+git+https://github.com/EugenTheMachine/efficientvit.git
 loralib==0.1.2
