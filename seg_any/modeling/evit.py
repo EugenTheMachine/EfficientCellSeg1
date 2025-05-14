@@ -174,6 +174,6 @@ class EfficientViTSam(nn.Module):
         # x = F.pad(x, (0, padw, 0, padh))
         try:
             res = self.transform(x)
-        except:
+        except TypeError:
             res = self.transform2(x)
         return res
