@@ -22,6 +22,7 @@ class EfficientViTSam(nn.Module):
         prompt_encoder: PromptEncoder,
         mask_decoder: MaskDecoder,
         image_size: tuple[int, int] = (512, 512),
+        device: str = "cuda"
     ) -> None:
         super().__init__()
         self.image_encoder = image_encoder
@@ -30,6 +31,7 @@ class EfficientViTSam(nn.Module):
 
         self.image_size = image_size
         self.image_encoder.img_size = image_size[0]
+        self.device = torch.device(device)
         # self.register_buffer("pixel_mean",
         #                      torch.Tensor([123.675 / 255, 116.28 / 255, 103.53 / 255]).view(-1, 1, 1),
         #                      False)
@@ -49,9 +51,9 @@ class EfficientViTSam(nn.Module):
             ]
         )
 
-    @property
-    def device(self) -> Any:
-        return self.pixel_mean.device
+    # @property
+    # def device(self) -> Any:
+    #     return self.pixel_mean.device
 
     def postprocess_masks(
         self,
