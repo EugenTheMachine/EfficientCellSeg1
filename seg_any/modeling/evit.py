@@ -39,7 +39,7 @@ class EfficientViTSam(nn.Module):
         #                      torch.Tensor([58.395 / 255, 57.12 / 255, 57.375 / 255]).view(-1, 1, 1),
         #                      False)
 
-        self.transform = transforms.Compose(
+        self.transform2 = transforms.Compose(
             [
                 SamResize(self.image_size[1]),
                 # transforms.ToTensor(),
@@ -50,7 +50,7 @@ class EfficientViTSam(nn.Module):
                 SamPad(self.image_size[1]),
             ]
         )
-        self.transform2 = transforms.Compose(
+        self.transform = transforms.Compose(
             [
                 SamResize(self.image_size[1]),
                 transforms.ToTensor(),
