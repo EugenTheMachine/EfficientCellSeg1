@@ -80,8 +80,10 @@ def load_model_from_config(config, empty_lora=False) -> LoRA_Sam:
                                                    image_size=config["sam_image_size"])
     if config['vit_name'] == 'evit':
         model = LoRa_ESAM(model, config)
+        print("Instantiated EfficientSAM...")
     else:
         model = LoRA_Sam(model, config)
+        print("Instantiated SAM...")
     model = model.cuda()
     if empty_lora:
         pass

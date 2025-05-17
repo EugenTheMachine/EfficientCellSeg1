@@ -24,7 +24,7 @@ from seg_any import sam_model_registry
 # from mobile_sam import sam_model_registry
 from set_environment import set_env
 from predict import load_model_from_config
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 def prepare_directories(config: Dict):
@@ -144,9 +144,9 @@ def extract_true_masks(
             true_cell_probs.append(cell_prob)
     true_cell_probs = torch.tensor(true_cell_probs, dtype=torch.float32).cuda()
     true_masks = torch.tensor(np.array(true_masks), dtype=torch.float32).cuda()
-    plt.imshow(true_masks[0].cpu().detach().numpy())
-    plt.title("GT")
-    plt.show()
+    # plt.imshow(true_masks[0].cpu().detach().numpy())
+    # plt.title("GT")
+    # plt.show()
     return true_masks, true_cell_probs
 
 
@@ -172,8 +172,8 @@ def compute_loss(
     )
 
     pred_logits, pred_cell_probs = extract_outputs(outputs)
-    plt.imshow(pred_logits[0].cpu().detach().numpy())
-    plt.show()
+    # plt.imshow(pred_logits[0].cpu().detach().numpy())
+    # plt.show()
     true_masks, true_cell_prob = extract_true_masks(
         batch_images, cell_masks, all_points, all_cell_probs, pred_logits[0].shape
     )

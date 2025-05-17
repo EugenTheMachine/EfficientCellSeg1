@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 # from .modeling import Sam
 from .modeling.evit import EfficientViTSam
 from .predictor import SamPredictor
+from efficientvit.models.efficientvit.sam import EfficientViTSamPredictor
 from .utils.amg import (
     MaskData,
     area_from_rle,
@@ -49,7 +50,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         crop_n_points_downscale_factor: int = 1,
         point_grids: Optional[List[np.ndarray]] = None,
         min_mask_region_area: int = 0,
-        max_mask_region_area_ratio: float = 0.1,
+        max_mask_region_area_ratio: float = 0.5,
         output_mode: str = "binary_mask",
     ) -> None:
         """
@@ -122,7 +123,8 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         if min_mask_region_area > 0:
             import cv2  # type: ignore # noqa: F401
 
-        self.predictor = SamPredictor(model)
+        # self.predictor = SamPredictor(model)
+        self.predictor = EfficientViTSamPredictor(model)
         self.points_per_batch = points_per_batch
         self.pred_iou_thresh = pred_iou_thresh
         self.stability_score_thresh = stability_score_thresh
