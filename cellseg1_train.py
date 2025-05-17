@@ -144,7 +144,7 @@ def extract_true_masks(
             true_cell_probs.append(cell_prob)
     true_cell_probs = torch.tensor(true_cell_probs, dtype=torch.float32).cuda()
     true_masks = torch.tensor(np.array(true_masks), dtype=torch.float32).cuda()
-    plt.imshow(true_masks[0])
+    plt.imshow(true_masks[0].cpu().detach().numpy())
     plt.show()
     return true_masks, true_cell_probs
 
