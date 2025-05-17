@@ -145,6 +145,7 @@ def extract_true_masks(
     true_cell_probs = torch.tensor(true_cell_probs, dtype=torch.float32).cuda()
     true_masks = torch.tensor(np.array(true_masks), dtype=torch.float32).cuda()
     plt.imshow(true_masks[0].cpu().detach().numpy())
+    plt.title("GT")
     plt.show()
     return true_masks, true_cell_probs
 
@@ -171,6 +172,8 @@ def compute_loss(
     )
 
     pred_logits, pred_cell_probs = extract_outputs(outputs)
+    plt.imshow(pred_logits[0].cpu().detach().numpy())
+    plt.show()
     true_masks, true_cell_prob = extract_true_masks(
         batch_images, cell_masks, all_points, all_cell_probs, pred_logits[0].shape
     )
