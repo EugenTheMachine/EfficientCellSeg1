@@ -284,12 +284,18 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
 
         # Generate masks for this crop in batches
         data = MaskData()
+        st = time()
+        c = 0
+        # TODO: complete this iteration of time analysis
         for (points,) in batch_iterator(self.points_per_batch, points_for_image):
             batch_data = self._process_batch(
                 points, cropped_im_size, crop_box, orig_size
             )
             data.cat(batch_data)
             del batch_data
+            c += 1
+        end = time()
+        print(f"Done {c} iters in {end-st}")
         st = time()
         self.predictor.reset_image()
         end = time()
