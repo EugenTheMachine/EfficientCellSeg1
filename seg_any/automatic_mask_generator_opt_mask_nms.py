@@ -362,13 +362,20 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
 
         # Filter by predicted IoU
         # print(data['iou_preds'])
-        st = time()
+        # st = time()
         if self.pred_iou_thresh > 0.0:
+            st = time()
             keep_mask = data["iou_preds"] > self.pred_iou_thresh
+            end = time()
+            df['phase'].append("keep mask composition")
+            df['time'].append(end-st)
+            st = time()
             data.filter(keep_mask)
-        end = time()
-        df['phase'].append("filtering by iou")
-        df['time'].append(end-st)
+            df['phase'].append("keep mask composition")
+            df['time'].append(end-st)
+        # end = time()
+        # df['phase'].append("filtering by iou")
+        # df['time'].append(end-st)
 
         # Calculate stability score
         st = time()

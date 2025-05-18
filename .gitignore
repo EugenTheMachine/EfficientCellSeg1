@@ -4,6 +4,7 @@
 *.npz
 *.npy
 *.tar
+*.csv
 
 experiment_in_paper/*/configs
 experiment_in_paper/result
