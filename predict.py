@@ -79,7 +79,7 @@ def predict_images(config, images, progress_callback=None, stop_event=None):
             st = time()
             output = mask_generator.generate(image)
             end = time()
-            print(f"Mask generator work time: {end-st}")
+            # print(f"Mask generator work time: {end-st}")
             if output == []:
                 print("Output is empty")
                 mask = np.zeros_like(image[:, :, 0], dtype=np.uint16)
@@ -88,7 +88,7 @@ def predict_images(config, images, progress_callback=None, stop_event=None):
                 st = time()
                 mask = sam_output_to_mask(output)
                 end = time()
-                print(f"Postprocessing time: {end-st}")
+                # print(f"Postprocessing time: {end-st}")
             pred_masks.append(mask)
 
             if progress_callback:
