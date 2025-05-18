@@ -63,8 +63,10 @@ def predict_images(config, images, progress_callback=None, stop_event=None):
                 break
             output = mask_generator.generate(image)
             if output == []:
+                print("Output is empty")
                 mask = np.zeros_like(image[:, :, 0], dtype=np.uint16)
             else:
+                print("Output is NOT empty")
                 mask = sam_output_to_mask(output)
             pred_masks.append(mask)
 
