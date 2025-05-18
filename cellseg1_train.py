@@ -243,7 +243,8 @@ def train_epoch(
                 if not is_valid_batch(images, all_points):
                     continue
                 batch_images, batch_points = to_tensor(images, all_points, config["sam_image_size"])
-                loss = compute_loss(model, config, batch_images, batch_points, cell_masks, all_points, all_cell_probs)
+                with autocast(device_type="cuda"):
+                    loss = compute_loss(model, config, batch_images, batch_points, cell_masks, all_points, all_cell_probs)
                 total_val_loss.append(loss.item())
         val_loss = sum(total_val_loss) / len_test
     else:
