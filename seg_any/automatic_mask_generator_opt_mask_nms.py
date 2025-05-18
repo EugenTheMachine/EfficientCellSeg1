@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from .modeling.evit import EfficientViTSam
 from .predictor import SamPredictor
 from efficientvit.models.efficientvit.sam import EfficientViTSamPredictor
-
+import pandas as pd
 from time import time
 from .utils.amg import (
     MaskData,
@@ -290,7 +290,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
                 points, cropped_im_size, crop_box, orig_size
             )
             end = time()
-            print(f"Done _process_batch iters in {end-st}")
+            # print(f"Done _process_batch iters in {end-st}")
             data.cat(batch_data)
             del batch_data
         st = time()
@@ -322,12 +322,17 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         orig_size: Tuple[int, ...],
     ) -> MaskData:
         orig_h, orig_w = orig_size
-
+        data = {
+            "phase": [],
+            "time": []
+        }
         # Run model on this batch
         st = time()
         transformed_points = self.predictor.transform.apply_coords(points, im_size)
         end = time()
         # print(f"Apply coords time: {end-st}")
+        data['phase'].append("apply coords")
+        data['time'].append(end-st)
         in_points = torch.as_tensor(transformed_points, device=self.predictor.device)
         in_labels = torch.ones(
             in_points.shape[0], dtype=torch.int, device=in_points.device
@@ -340,24 +345,30 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             return_logits=True,
         )
         end = time()
-        # print(f"Pred torch time: {end-st}")
-        # print(masks)
+        data['phase'].append("predict_torch")
+        data['time'].append(end-st)
 
         # Serialize predictions and store in MaskData
+        st = time()
         data = MaskData(
             masks=masks.flatten(0, 1),
             iou_preds=iou_preds.flatten(0, 1),
             points=torch.as_tensor(points.repeat(masks.shape[1], axis=0)),
         )
-        # print(data['masks'])
+        end = time()
         del masks
+        data['phase'].append("mask instantiated")
+        data['time'].append(end-st)
 
         # Filter by predicted IoU
         # print(data['iou_preds'])
+        st = time()
         if self.pred_iou_thresh > 0.0:
             keep_mask = data["iou_preds"] > self.pred_iou_thresh
             data.filter(keep_mask)
-        # print(data['iou_preds'])
+        end = time()
+        data['phase'].append("filtering by iou")
+        data['time'].append(end-st)
 
         # Calculate stability score
         st = time()
@@ -367,33 +378,51 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             self.stability_score_offset,
         )
         end = time()
-        # print(data['stability_score'])
-        # print(f"Stability score calculation: ")
+        data['phase'].append("calculate stability score")
+        data['time'].append(end-st)
+        st = time()
         if self.stability_score_thresh > 0.0:
             keep_mask = data["stability_score"] >= self.stability_score_thresh
             data.filter(keep_mask)
+        end = time()
+        data['phase'].append("data score filtering")
+        data['time'].append(end-st)
 
         # Threshold masks and calculate boxes
         data["masks"] = data["masks"] > self.predictor.model.mask_threshold
 
+        st = time()
         if self.max_mask_region_area_ratio > 0.0:
             area = torch.sum(data["masks"], dim=(1, 2))
             keep_mask = area < (self.max_mask_region_area_ratio * orig_h * orig_w)
             data.filter(keep_mask)
+        end = time()
+        data['phase'].append("data region filtering")
+        data['time'].append(end-st)
 
+        st = time()
         data["boxes"] = batched_mask_to_box(data["masks"])
+        data['phase'].append("batched_mask_to_box")
+        data['time'].append(end-st)
 
         # Filter boxes that touch crop boundaries
+        st = time()
         keep_mask = ~is_box_near_crop_edge(
             data["boxes"], crop_box, [0, 0, orig_w, orig_h]
         )
         if not torch.all(keep_mask):
             data.filter(keep_mask)
+        data['phase'].append("filter by crop touching")
+        data['time'].append(end-st)
 
         # Compress to RLE
+        st = time()
         data["masks"] = uncrop_masks(data["masks"], crop_box, orig_h, orig_w)
         data["rles"] = mask_to_rle_pytorch(data["masks"])
         del data["masks"]
+        data['phase'].append("postprocesing")
+        data['time'].append(end-st)
+        pd.DataFrame(data).to_csv("Time logs.csv", index=False)
 
         return data
 
