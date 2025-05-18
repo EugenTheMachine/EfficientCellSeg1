@@ -40,17 +40,23 @@ class MaskData:
         return self._stats.items()
 
     def filter(self, keep: torch.Tensor) -> None:
+        print(len(self._stats.items()))
         for k, v in self._stats.items():
             if v is None:
                 self._stats[k] = None
+                print("case 1")
             elif isinstance(v, torch.Tensor):
                 self._stats[k] = v[torch.as_tensor(keep, device=v.device)]
+                print("case 1")
             elif isinstance(v, np.ndarray):
                 self._stats[k] = v[keep.detach().cpu().numpy()]
+                print("case 1")
             elif isinstance(v, list) and keep.dtype == torch.bool:
                 self._stats[k] = [a for i, a in enumerate(v) if keep[i]]
+                print("case 1")
             elif isinstance(v, list):
                 self._stats[k] = [v[i] for i in keep]
+                print("case 1")
             else:
                 raise TypeError(f"MaskData key {k} has an unsupported type {type(v)}.")
 
