@@ -303,7 +303,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             iou_preds=iou_preds.flatten(0, 1),
             points=torch.as_tensor(points.repeat(masks.shape[1], axis=0)),
         )
-        print(data['masks'])
+        # print(data['masks'])
         del masks
 
         # Filter by predicted IoU
@@ -317,6 +317,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             self.predictor.model.mask_threshold,
             self.stability_score_offset,
         )
+        print(data['stability_score'])
         if self.stability_score_thresh > 0.0:
             keep_mask = data["stability_score"] >= self.stability_score_thresh
             data.filter(keep_mask)
