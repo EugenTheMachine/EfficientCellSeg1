@@ -295,7 +295,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             multimask_output=False,
             return_logits=True,
         )
-        print(masks)
+        # print(masks)
 
         # Serialize predictions and store in MaskData
         data = MaskData(
@@ -303,6 +303,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             iou_preds=iou_preds.flatten(0, 1),
             points=torch.as_tensor(points.repeat(masks.shape[1], axis=0)),
         )
+        print(data['masks'])
         del masks
 
         # Filter by predicted IoU
