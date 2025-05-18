@@ -13,8 +13,8 @@ from efficientvit.models.efficientvit.sam import EfficientViTSamImageEncoder, Pr
 
 
 class EfficientViTSam(nn.Module):
-    mask_threshold: float = 0.0
-    image_format: str = "RGB"
+    # mask_threshold: float = 0.0
+    # image_format: str = "RGB"
 
     def __init__(
         self,
@@ -32,6 +32,9 @@ class EfficientViTSam(nn.Module):
         self.image_size = image_size
         self.image_encoder.img_size = image_size[0]
         self.device = torch.device(device)
+
+        self.mask_threshold: float = 0.0
+        self.image_format: str = "RGB"
         # self.register_buffer("pixel_mean",
         #                      torch.Tensor([123.675 / 255, 116.28 / 255, 103.53 / 255]).view(-1, 1, 1),
         #                      False)
