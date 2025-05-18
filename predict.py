@@ -15,6 +15,7 @@ from data.utils import (
 from peft.sam_lora_image_encoder_mask_decoder import LoRA_Sam, LoRa_ESAM
 from seg_any import SamAutomaticMaskGeneratorOptMaskNMS, sam_model_registry
 from set_environment import set_env
+from time import time
 from efficientvit.models.efficientvit.sam import EfficientViTSamAutomaticMaskGenerator
 
 
@@ -75,13 +76,19 @@ def predict_images(config, images, progress_callback=None, stop_event=None):
         for i, image in enumerate(tqdm(images, disable=progress_callback is not None)):
             if stop_event and stop_event.is_set():
                 break
+            st = time()
             output = mask_generator.generate(image)
+            end = time()
+            print(f"Mask generator work time: {end-st}")
             if output == []:
                 print("Output is empty")
                 mask = np.zeros_like(image[:, :, 0], dtype=np.uint16)
             else:
                 print("Output is NOT empty")
+                st = time()
                 mask = sam_output_to_mask(output)
+                end = time()
+                print(f"Postprocessing time: {end-st}")
             pred_masks.append(mask)
 
             if progress_callback:

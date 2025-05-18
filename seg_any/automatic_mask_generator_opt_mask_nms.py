@@ -247,7 +247,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         st = time()
         self.predictor.set_image(cropped_im)
         end = time()
-        print(f"Set image time: {end-st}")
+        # print(f"Set image time: {end-st}")
 
         # Get points for this crop
         points_scale = np.array(cropped_im_size)[None, ::-1]
@@ -264,7 +264,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         st = time()
         self.predictor.reset_image()
         end = time()
-        print(f"Reset image time: {end-st}")
+        # print(f"Reset image time: {end-st}")
         # print(data["iou_preds"])
 
         keep_by_nms = opt_mask_nms(
@@ -295,7 +295,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         st = time()
         transformed_points = self.predictor.transform.apply_coords(points, im_size)
         end = time()
-        print(f"Apply coords time: {end-st}")
+        # print(f"Apply coords time: {end-st}")
         in_points = torch.as_tensor(transformed_points, device=self.predictor.device)
         in_labels = torch.ones(
             in_points.shape[0], dtype=torch.int, device=in_points.device
@@ -308,7 +308,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             return_logits=True,
         )
         end = time()
-        print(f"Pred torch time: {end-st}")
+        # print(f"Pred torch time: {end-st}")
         # print(masks)
 
         # Serialize predictions and store in MaskData
@@ -336,7 +336,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         )
         end = time()
         # print(data['stability_score'])
-        print(f"Stability score calculation: {end-st}")
+        # print(f"Stability score calculation: ")
         if self.stability_score_thresh > 0.0:
             keep_mask = data["stability_score"] >= self.stability_score_thresh
             data.filter(keep_mask)
