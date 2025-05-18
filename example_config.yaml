@@ -91,8 +91,8 @@ min_mask_region_area: 20
 box_nms_thresh: 0.05
 crop_nms_thresh: 0.05
 pred_iou_thresh: 0.5  # was 0.8
-stability_score_thresh: 0.6
-stability_score_offset: 0.8
+stability_score_thresh: 0.0001  # was 0.8
+stability_score_offset: 0.5  # was 0.8
 
 # log
 track_gpu_memory: false
