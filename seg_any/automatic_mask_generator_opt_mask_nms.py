@@ -166,6 +166,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
 
         # Generate masks
         mask_data = self._generate_masks(image)
+        np.save("mask_data_orig.npy", mask_data)
 
         # Filter small disconnected regions and holes in masks
         if self.min_mask_region_area > 0:
@@ -174,6 +175,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
                 self.min_mask_region_area,
                 max(self.box_nms_thresh, self.crop_nms_thresh),
             )
+            np.save("mask_data_post.npy", mask_data)
 
         # Encode masks
         if self.output_mode == "coco_rle":
