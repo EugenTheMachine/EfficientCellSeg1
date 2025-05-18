@@ -196,7 +196,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         else:
             mask_data["segmentations"] = mask_data["rles"]
         end = time()
-        print(f"Mask encoding time: {end-st}")
+        # print(f"Mask encoding time: {end-st}")
 
         # Write mask records
         curr_anns = []
@@ -215,32 +215,49 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             if area_ratio < self.max_mask_region_area_ratio:
                 curr_anns.append(ann)
         end = time()
-        print(f"Mask writing time: {end-st}")
+        # print(f"Mask writing time: {end-st}")
 
         return curr_anns
 
     def _generate_masks(self, image: np.ndarray) -> MaskData:
         orig_size = image.shape[:2]
+        st = time()
         crop_boxes, layer_idxs = generate_crop_boxes(
             orig_size, self.crop_n_layers, self.crop_overlap_ratio
         )
+        end = time()
+        print(f"Crop box generation time: {end-st}")
 
         # Iterate over image crops
         data = MaskData()
+        st = time()
+        c = 0
         for crop_box, layer_idx in zip(crop_boxes, layer_idxs):
             crop_data = self._process_crop(image, crop_box, layer_idx, orig_size)
             data.cat(crop_data)
+            c += 1
+        end = time()
+        print(f"Done {c} iterations of crop processing in {end-st}")
 
         # Remove duplicate masks between crops
         if len(crop_boxes) > 1:
+            st = time()
             scores = calculate_scores(data["iou_preds"], data["stability_score"])
+            end = time()
+            print(f"Score calculation time: {end-st}")
+            st = time()
             keep_by_nms = opt_mask_nms(
                 data["rles"],
                 data["boxes"].float(),
                 scores.float(),
                 nms_thresh=self.crop_nms_thresh,
             )
+            end = time()
+            print(f"NMS time: {end-st}")
+            st = time()
             data.filter(keep_by_nms)
+            end = time()
+            print(f"Filtering time: {end-st}")
 
         data.to_numpy()
         return data
