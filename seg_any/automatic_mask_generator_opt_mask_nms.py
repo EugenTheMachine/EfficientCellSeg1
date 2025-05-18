@@ -373,7 +373,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             print(f"TYPE: {type(keep_mask)}")
             data.filter(keep_mask)
             end = time()
-            df['phase'].append("keep mask composition")
+            df['phase'].append("data filtering by keep mask")
             df['time'].append(end-st)
         # end = time()
         # df['phase'].append("filtering by iou")
