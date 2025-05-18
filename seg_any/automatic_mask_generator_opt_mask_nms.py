@@ -371,6 +371,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             df['time'].append(end-st)
             st = time()
             print(f"TYPE: {type(keep_mask)}")
+            print(f"SHAPE: {keep_mask.shape}\n")
             data.filter(keep_mask)
             end = time()
             df['phase'].append("data filtering by keep mask")
