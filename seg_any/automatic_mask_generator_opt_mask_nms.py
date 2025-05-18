@@ -307,9 +307,11 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         del masks
 
         # Filter by predicted IoU
+        print(data['stability_score'])
         if self.pred_iou_thresh > 0.0:
             keep_mask = data["iou_preds"] > self.pred_iou_thresh
             data.filter(keep_mask)
+        print(data['stability_score'])
 
         # Calculate stability score
         data["stability_score"] = calculate_stability_score(
@@ -317,7 +319,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             self.predictor.model.mask_threshold,
             self.stability_score_offset,
         )
-        print(data['stability_score'])
+        # print(data['stability_score'])
         if self.stability_score_thresh > 0.0:
             keep_mask = data["stability_score"] >= self.stability_score_thresh
             data.filter(keep_mask)
