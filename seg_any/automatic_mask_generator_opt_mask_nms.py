@@ -257,7 +257,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             data.cat(batch_data)
             del batch_data
         self.predictor.reset_image()
-        print(data["iou_preds"])
+        # print(data["iou_preds"])
 
         keep_by_nms = opt_mask_nms(
             data["rles"],
