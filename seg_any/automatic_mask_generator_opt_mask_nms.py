@@ -40,7 +40,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         model: EfficientViTSam,
         points_per_side: Optional[int] = 32,
         points_per_batch: int = 64,
-        pred_iou_thresh: float = 0.088,
+        pred_iou_thresh: float = 0.88,
         stability_score_thresh: float = 0.95,
         stability_score_offset: float = 1.0,
         box_nms_thresh: float = 0.7,
