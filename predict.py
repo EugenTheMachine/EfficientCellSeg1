@@ -15,6 +15,7 @@ from data.utils import (
 from peft.sam_lora_image_encoder_mask_decoder import LoRA_Sam, LoRa_ESAM
 from seg_any import SamAutomaticMaskGeneratorOptMaskNMS, sam_model_registry
 from set_environment import set_env
+from efficientvit.models.efficientvit.sam import EfficientViTSamAutomaticMaskGenerator
 
 
 def sam_output_to_mask(output):
@@ -41,17 +42,30 @@ def predict_images(config, images, progress_callback=None, stop_event=None):
     else:
         model_sam = model
 
-    mask_generator = SamAutomaticMaskGeneratorOptMaskNMS(
+    # mask_generator = SamAutomaticMaskGeneratorOptMaskNMS(
+    #     model=model_sam,
+    #     points_per_side=config["points_per_side"],
+    #     points_per_batch=config["points_per_batch"],
+    #     crop_n_layers=config["crop_n_layers"],
+    #     crop_n_points_downscale_factor=config["crop_n_points_downscale_factor"],
+    #     box_nms_thresh=config["box_nms_thresh"],
+    #     crop_nms_thresh=config["crop_nms_thresh"],
+    #     pred_iou_thresh=config["pred_iou_thresh"],
+    #     min_mask_region_area=config["min_mask_region_area"],
+    #     max_mask_region_area_ratio=config["max_mask_region_area_ratio"],
+    #     stability_score_thresh=config["stability_score_thresh"],
+    #     stability_score_offset=config["stability_score_offset"],
+    # )
+    mask_generator = EfficientViTSamAutomaticMaskGenerator(
         model=model_sam,
-        points_per_side=config["points_per_side"],
-        points_per_batch=config["points_per_batch"],
-        crop_n_layers=config["crop_n_layers"],
-        crop_n_points_downscale_factor=config["crop_n_points_downscale_factor"],
-        box_nms_thresh=config["box_nms_thresh"],
-        crop_nms_thresh=config["crop_nms_thresh"],
-        pred_iou_thresh=config["pred_iou_thresh"],
-        min_mask_region_area=config["min_mask_region_area"],
-        max_mask_region_area_ratio=config["max_mask_region_area_ratio"],
+        points_per_side=config['points_per_side'],
+        points_per_batch=config['points_per_batch'],
+        crop_n_layers=config['crop_n_layers'],
+        crop_n_points_downscale_factor=config['crop_n_points_downscale_factor'],
+        box_nms_thresh=config['box_nms_thresh'],
+        crop_nms_thresh=config['crop_nms_thresh'],
+        pred_iou_thresh=config['pred_iou_thresh'],
+        min_mask_region_area=config['min_mask_region_area'],
         stability_score_thresh=config["stability_score_thresh"],
         stability_score_offset=config["stability_score_offset"],
     )
