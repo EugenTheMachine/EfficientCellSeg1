@@ -210,7 +210,6 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         crop_boxes, layer_idxs = generate_crop_boxes(
             orig_size, self.crop_n_layers, self.crop_overlap_ratio
         )
-        print(crop_boxes)
 
         # Iterate over image crops
         data = MaskData()
@@ -258,6 +257,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             data.cat(batch_data)
             del batch_data
         self.predictor.reset_image()
+        print(data)
 
         keep_by_nms = opt_mask_nms(
             data["rles"],
