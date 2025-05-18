@@ -295,6 +295,7 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             multimask_output=False,
             return_logits=True,
         )
+        print(masks)
 
         # Serialize predictions and store in MaskData
         data = MaskData(
