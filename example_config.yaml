@@ -28,7 +28,7 @@ len_test: 1
 
 # train
 epoch_max: 300  # orig - 300, optimal - 20-30
-patience: 5
+patience: 10
 batch_size: 4
 val_batch_size: 8
 gradient_accumulation_step: 8
