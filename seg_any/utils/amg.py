@@ -47,7 +47,7 @@ class MaskData:
                 print("case 1")
             elif isinstance(v, torch.Tensor):
                 self._stats[k] = v[torch.as_tensor(keep, device=v.device)]
-                print("case 2")
+                # print("case 2")
             elif isinstance(v, np.ndarray):
                 self._stats[k] = v[keep.detach().cpu().numpy()]
                 print("case 3")
