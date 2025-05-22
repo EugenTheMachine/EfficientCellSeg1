@@ -40,14 +40,14 @@ def cross_entropy_loss(
     )
 
     selected_pred = torch.sigmoid(selected_pred_logits)
-    p_t = selected_pred * true_masks + (1 - selected_pred) * (1 - true_masks)
+    p_t = selected_pred * selected_true_masks + (1 - selected_pred) * (1 - selected_true_masks)
     focal_loss = ce_loss * ((1 - p_t) ** gamma)
     if alpha >= 0:
-        alpha_t = alpha * true_masks + (1 - alpha) * (1 - true_masks)
+        alpha_t = alpha * selected_true_masks + (1 - alpha) * (1 - selected_true_masks)
         focal_loss = alpha_t * focal_loss
 
-    intersection = (selected_pred * true_masks).sum(dim=(1,2))
-    union = (selected_pred + true_masks).sum(dim=(1,2))
+    intersection = (selected_pred * selected_true_masks).sum(dim=(1,2))
+    union = (selected_pred + selected_true_masks).sum(dim=(1,2))
     dice = (2. * intersection + smooth) / (union + smooth)
     dice_loss = 1 - dice.mean()
 
