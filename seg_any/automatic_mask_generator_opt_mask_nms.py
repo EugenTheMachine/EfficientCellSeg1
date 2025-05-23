@@ -167,26 +167,26 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         """
 
         # Generate masks
-        st = time()
+        # st = time()
         mask_data = self._generate_masks(image)
-        end = time()
-        print(f"Mask generation time: {end-st}")
+        # end = time()
+        # print(f"Mask generation time: {end-st}")
         # np.save("mask_data_orig.npy", mask_data)
 
         # Filter small disconnected regions and holes in masks
         if self.min_mask_region_area > 0:
-            st = time()
+            # st = time()
             mask_data = self.postprocess_small_regions(
                 mask_data,
                 self.min_mask_region_area,
                 max(self.box_nms_thresh, self.crop_nms_thresh),
             )
-            end = time()
-            print(f"Small region postprocessing time: {end-st}")
+            # end = time()
+            # print(f"Small region postprocessing time: {end-st}")
             # np.save("mask_data_post.npy", mask_data)
 
         # Encode masks
-        st = time()
+        # st = time()
         if self.output_mode == "coco_rle":
             mask_data["segmentations"] = [
                 coco_encode_rle(rle) for rle in mask_data["rles"]
@@ -195,12 +195,12 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             mask_data["segmentations"] = [rle_to_mask(rle) for rle in mask_data["rles"]]
         else:
             mask_data["segmentations"] = mask_data["rles"]
-        end = time()
+        # end = time()
         # print(f"Mask encoding time: {end-st}")
 
         # Write mask records
         curr_anns = []
-        st = time()
+        # st = time()
         for idx in range(len(mask_data["segmentations"])):
             ann = {
                 "segmentation": mask_data["segmentations"][idx],
@@ -214,50 +214,50 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
             area_ratio = ann["area"] / (image.shape[0] * image.shape[1])
             if area_ratio < self.max_mask_region_area_ratio:
                 curr_anns.append(ann)
-        end = time()
+        # end = time()
         # print(f"Mask writing time: {end-st}")
 
         return curr_anns
 
     def _generate_masks(self, image: np.ndarray) -> MaskData:
         orig_size = image.shape[:2]
-        st = time()
+        # st = time()
         crop_boxes, layer_idxs = generate_crop_boxes(
             orig_size, self.crop_n_layers, self.crop_overlap_ratio
         )
-        end = time()
-        print(f"Crop box generation time: {end-st}")
+        # end = time()
+        # print(f"Crop box generation time: {end-st}")
 
         # Iterate over image crops
         data = MaskData()
-        st = time()
-        c = 0
+        # st = time()
+        # c = 0
         for crop_box, layer_idx in zip(crop_boxes, layer_idxs):
             crop_data = self._process_crop(image, crop_box, layer_idx, orig_size)
             data.cat(crop_data)
-            c += 1
-        end = time()
-        print(f"Done {c} iterations of crop processing in {end-st}")
+            # c += 1
+        # end = time()
+        # print(f"Done {c} iterations of crop processing in {end-st}")
 
         # Remove duplicate masks between crops
         if len(crop_boxes) > 1:
-            st = time()
+            # st = time()
             scores = calculate_scores(data["iou_preds"], data["stability_score"])
-            end = time()
-            print(f"Score calculation time: {end-st}")
-            st = time()
+            # end = time()
+            # print(f"Score calculation time: {end-st}")
+            # st = time()
             keep_by_nms = opt_mask_nms(
                 data["rles"],
                 data["boxes"].float(),
                 scores.float(),
                 nms_thresh=self.crop_nms_thresh,
             )
-            end = time()
-            print(f"NMS time: {end-st}")
-            st = time()
+            # end = time()
+            # print(f"NMS time: {end-st}")
+            # st = time()
             data.filter(keep_by_nms)
-            end = time()
-            print(f"Filtering time: {end-st}")
+            # end = time()
+            # print(f"Filtering time: {end-st}")
 
         data.to_numpy()
         return data
@@ -273,9 +273,9 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         x0, y0, x1, y1 = crop_box
         cropped_im = image[y0:y1, x0:x1, :]
         cropped_im_size = cropped_im.shape[:2]
-        st = time()
+        # st = time()
         self.predictor.set_image(cropped_im)
-        end = time()
+        # end = time()
         # print(f"Set image time: {end-st}")
 
         # Get points for this crop
@@ -285,17 +285,17 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         # Generate masks for this crop in batches
         data = MaskData()
         for (points,) in batch_iterator(self.points_per_batch, points_for_image):
-            st = time()
+            # st = time()
             batch_data = self._process_batch(
                 points, cropped_im_size, crop_box, orig_size
             )
-            end = time()
+            # end = time()
             # print(f"Done _process_batch iters in {end-st}")
             data.cat(batch_data)
             del batch_data
-        st = time()
+        # st = time()
         self.predictor.reset_image()
-        end = time()
+        # end = time()
         # print(f"Reset image time: {end-st}")
         # print(data["iou_preds"])
 
@@ -322,120 +322,120 @@ class SamAutomaticMaskGeneratorOptMaskNMS:
         orig_size: Tuple[int, ...],
     ) -> MaskData:
         orig_h, orig_w = orig_size
-        df = {
-            "phase": [],
-            "time": []
-        }
+        # df = {
+        #     "phase": [],
+        #     "time": []
+        # }
         # Run model on this batch
-        st = time()
+        # st = time()
         transformed_points = self.predictor.transform.apply_coords(points, im_size)
-        end = time()
+        # end = time()
         # print(f"Apply coords time: {end-st}")
-        df['phase'].append("apply coords")
-        df['time'].append(end-st)
+        # df['phase'].append("apply coords")
+        # df['time'].append(end-st)
         in_points = torch.as_tensor(transformed_points, device=self.predictor.device)
         in_labels = torch.ones(
             in_points.shape[0], dtype=torch.int, device=in_points.device
         )
-        st = time()
+        # st = time()
         masks, iou_preds, _ = self.predictor.predict_torch(
             in_points[:, None, :],
             in_labels[:, None],
             multimask_output=False,
             return_logits=True,
         )
-        end = time()
-        df['phase'].append("predict_torch")
-        df['time'].append(end-st)
+        # end = time()
+        # df['phase'].append("predict_torch")
+        # df['time'].append(end-st)
 
         # Serialize predictions and store in MaskData
-        st = time()
+        # st = time()
         data = MaskData(
             masks=masks.flatten(0, 1),
             iou_preds=iou_preds.flatten(0, 1),
             points=torch.as_tensor(points.repeat(masks.shape[1], axis=0)),
         )
-        end = time()
+        # end = time()
         del masks
-        df['phase'].append("mask instantiated")
-        df['time'].append(end-st)
+        # df['phase'].append("mask instantiated")
+        # df['time'].append(end-st)
 
         # Filter by predicted IoU
         # print(data['iou_preds'])
         # st = time()
         if self.pred_iou_thresh > 0.0:
-            st = time()
+            # st = time()
             keep_mask = data["iou_preds"] > self.pred_iou_thresh
-            end = time()
-            df['phase'].append("keep mask composition")
-            df['time'].append(end-st)
-            st = time()
+            # end = time()
+            # df['phase'].append("keep mask composition")
+            # df['time'].append(end-st)
+            # st = time()
             # print(f"TYPE: {type(keep_mask)}")
             # print(f"SHAPE: {keep_mask.shape}\n")
             data.filter(keep_mask)
-            end = time()
-            df['phase'].append("data filtering by keep mask")
-            df['time'].append(end-st)
+            # end = time()
+            # df['phase'].append("data filtering by keep mask")
+            # df['time'].append(end-st)
         # end = time()
         # df['phase'].append("filtering by iou")
         # df['time'].append(end-st)
 
         # Calculate stability score
-        st = time()
+        # st = time()
         data["stability_score"] = calculate_stability_score(
             data["masks"],
             self.predictor.model.mask_threshold,
             self.stability_score_offset,
         )
-        end = time()
-        df['phase'].append("calculate stability score")
-        df['time'].append(end-st)
-        st = time()
+        # end = time()
+        # df['phase'].append("calculate stability score")
+        # df['time'].append(end-st)
+        # st = time()
         if self.stability_score_thresh > 0.0:
             keep_mask = data["stability_score"] >= self.stability_score_thresh
             data.filter(keep_mask)
-        end = time()
-        df['phase'].append("data score filtering")
-        df['time'].append(end-st)
+        # end = time()
+        # df['phase'].append("data score filtering")
+        # df['time'].append(end-st)
 
         # Threshold masks and calculate boxes
         data["masks"] = data["masks"] > self.predictor.model.mask_threshold
 
-        st = time()
+        # st = time()
         if self.max_mask_region_area_ratio > 0.0:
             area = torch.sum(data["masks"], dim=(1, 2))
             keep_mask = area < (self.max_mask_region_area_ratio * orig_h * orig_w)
             data.filter(keep_mask)
-        end = time()
-        df['phase'].append("data region filtering")
-        df['time'].append(end-st)
+        # end = time()
+        # df['phase'].append("data region filtering")
+        # df['time'].append(end-st)
 
-        st = time()
+        # st = time()
         data["boxes"] = batched_mask_to_box(data["masks"])
-        end = time()
-        df['phase'].append("batched_mask_to_box")
-        df['time'].append(end-st)
+        # end = time()
+        # df['phase'].append("batched_mask_to_box")
+        # df['time'].append(end-st)
 
         # Filter boxes that touch crop boundaries
-        st = time()
+        # st = time()
         keep_mask = ~is_box_near_crop_edge(
             data["boxes"], crop_box, [0, 0, orig_w, orig_h]
         )
         if not torch.all(keep_mask):
             data.filter(keep_mask)
-        end = time()
-        df['phase'].append("filter by crop touching")
-        df['time'].append(end-st)
+        # end = time()
+        # df['phase'].append("filter by crop touching")
+        # df['time'].append(end-st)
 
         # Compress to RLE
-        st = time()
+        # st = time()
         data["masks"] = uncrop_masks(data["masks"], crop_box, orig_h, orig_w)
         data["rles"] = mask_to_rle_pytorch(data["masks"])
         del data["masks"]
-        end = time()
-        df['phase'].append("postprocesing")
-        df['time'].append(end-st)
-        pd.DataFrame(df).to_csv("Time logs.csv", index=False)
+        # end = time()
+        # df['phase'].append("postprocesing")
+        # df['time'].append(end-st)
+        # pd.DataFrame(df).to_csv("Time logs.csv", index=False)
 
         return data
 

@@ -55,8 +55,8 @@ def predict_images(config, images, generator_func=None, progress_callback=None, 
                 output = mask_generator.generate(image)
                 end_time = time.time()
                 times.append(end_time - start_time)
-                print(f"Time taken for image {i}, {t}: {end_time - start_time} seconds")
-            print(f"Average time taken for image {i}: {np.mean(times[1:])} seconds")
+                # print(f"Time taken for image {i}, {t}: {end_time - start_time} seconds")
+            # print(f"Average time taken for image {i}: {np.mean(times[1:])} seconds")
             if output == []:
                 mask = np.zeros_like(image[:, :, 0], dtype=np.uint16)
             else:
