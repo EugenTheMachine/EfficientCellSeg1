@@ -81,10 +81,10 @@ def predict_images(config, images, progress_callback=None, stop_event=None):
             # end = time()
             # print(f"Mask generator work time: {end-st}")
             if output == []:
-                print("Output is empty")
+                # print("Output is empty")
                 mask = np.zeros_like(image[:, :, 0], dtype=np.uint16)
             else:
-                print("Output is NOT empty")
+                # print("Output is NOT empty")
                 # st = time()
                 mask = sam_output_to_mask(output)
                 # end = time()
